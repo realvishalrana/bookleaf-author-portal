@@ -1,17 +1,12 @@
 /** Pill badge for ticket lifecycle status. */
 
+import { STATUS_LABEL } from "@/constants/ticket";
+
 const STATUS_CLASS: Record<string, string> = {
   OPEN: "bg-blue-100 text-blue-800",
   IN_PROGRESS: "bg-amber-100 text-amber-800",
   RESOLVED: "bg-green-100 text-green-800",
   CLOSED: "bg-slate-100 text-slate-600",
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  OPEN: "Open",
-  IN_PROGRESS: "In Progress",
-  RESOLVED: "Resolved",
-  CLOSED: "Closed",
 };
 
 interface Props {

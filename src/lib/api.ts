@@ -2,6 +2,10 @@ import { getToken, clearAuth } from "./auth";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 
+export function getApiBaseUrl(): string {
+  return API_URL;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,

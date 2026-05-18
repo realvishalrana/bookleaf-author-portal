@@ -1,20 +1,14 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { DashboardNav } from "@/components/DashboardNav";
-import { getToken } from "@/lib/auth";
+import { useRequireAuth } from "@/hooks/useAuthRedirect";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!getToken()) router.replace("/login");
-  }, [router]);
+  useRequireAuth();
 
   return (
     <div className="min-h-screen bg-emerald-50/40">

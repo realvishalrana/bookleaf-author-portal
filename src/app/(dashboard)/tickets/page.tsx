@@ -7,6 +7,8 @@ import { useMyTickets } from "@/hooks/useMyTickets";
 import { StatusBadge } from "@/components/StatusBadge";
 import { PriorityBadge } from "@/components/PriorityBadge";
 import { Pagination } from "@/components/Pagination";
+import { ErrorAlert } from "@/components/ErrorAlert";
+import { LoadingState } from "@/components/LoadingState";
 
 export default function TicketsPage() {
   const { tickets, loading, error, search, page, pagination, setSearch, setPage } =
@@ -38,12 +40,8 @@ export default function TicketsPage() {
         />
       </div>
 
-      {loading && <p className="mt-6 text-slate-600">Loading…</p>}
-      {error && (
-        <p className="mt-4 rounded-md bg-red-50 px-4 py-2 text-sm text-red-600">
-          {error}
-        </p>
-      )}
+      {loading && <LoadingState className="mt-6" />}
+      {error && <ErrorAlert message={error} />}
       {!loading && !error && tickets.length === 0 && (
         <p className="mt-6 text-slate-600">No tickets match your search.</p>
       )}

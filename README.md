@@ -5,7 +5,7 @@ Next.js author-facing portal for BookLeaf support.
 ## Setup
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env
 npm install
 npm run dev
 ```

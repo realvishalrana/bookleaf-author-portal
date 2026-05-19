@@ -1,13 +1,9 @@
+import type { StoredUser } from "@/types/auth";
+
+export type { StoredUser } from "@/types/auth";
+
 const TOKEN_KEY = "bookleaf_token";
 const USER_KEY = "bookleaf_user";
-
-export interface StoredUser {
-  id: string;
-  email: string;
-  role: string;
-  authorId: string | null;
-  name: string | null;
-}
 
 export function getToken(): string | null {
   if (typeof window === "undefined") return null;

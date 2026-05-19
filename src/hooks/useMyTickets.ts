@@ -1,14 +1,11 @@
 "use client";
 
-/** Fetches the author's ticket list — owns search, page, loading and error state. */
-
-import { useCallback, useEffect, useRef, useState } from "react";
-import { api } from "@/lib/api";
+import { useCallback, useEffect, useState } from "react";
+import { listTickets } from "@/services/tickets.service";
 import type { AuthorTicketSummary, PaginationMeta } from "@/types/ticket";
 
 export type { AuthorTicketSummary } from "@/types/ticket";
 
-const PAGE_LIMIT = 10;
 const SEARCH_DEBOUNCE_MS = 300;
 
 export interface UseMyTicketsReturn {
@@ -28,46 +25,53 @@ export function useMyTickets(): UseMyTicketsReturn {
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<PaginationMeta | null>(null);
   const [search, setSearchRaw] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPageRaw] = useState(1);
 
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
+  }, [search]);
 
-  const fetchTickets = useCallback((currentPage: number, currentSearch: string) => {
-    const params = new URLSearchParams();
-    if (currentSearch) params.set("search", currentSearch);
-    params.set("page", String(currentPage));
-    params.set("limit", String(PAGE_LIMIT));
-
+  const fetchTickets = useCallback(async (currentPage: number, currentSearch: string) => {
     setLoading(true);
     setError(null);
-
-    api<{ tickets: AuthorTicketSummary[]; total: number; page: number; totalPages: number }>(
-      `/api/v1/author/tickets?${params.toString()}`
-    )
-      .then((d) => {
-        setTickets(d.tickets);
-        setPagination({ total: d.total, page: d.page, totalPages: d.totalPages });
-      })
-      .catch((err) =>
-        setError(err instanceof Error ? err.message : "Failed to load tickets")
-      )
-      .finally(() => setLoading(false));
+    try {
+      const data = await listTickets(currentSearch, currentPage);
+      setTickets(data.tickets);
+      setPagination({
+        total: data.total,
+        page: data.page,
+        totalPages: data.totalPages,
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to load tickets");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => {
-    fetchTickets(page, search);
-  }, [fetchTickets, page]); // eslint-disable-line react-hooks/exhaustive-deps
+    fetchTickets(page, debouncedSearch);
+  }, [fetchTickets, page, debouncedSearch]);
 
-  function setPage(v: number) { setPageRaw(v); }
+  function setPage(v: number) {
+    setPageRaw(v);
+  }
 
   function setSearch(v: string) {
     setSearchRaw(v);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setPageRaw(1);
-      fetchTickets(1, v);
-    }, SEARCH_DEBOUNCE_MS);
+    setPageRaw(1);
   }
 
-  return { tickets, loading, error, search, page, pagination, setSearch, setPage };
+  return {
+    tickets,
+    loading,
+    error,
+    search,
+    page,
+    pagination,
+    setSearch,
+    setPage,
+  };
 }

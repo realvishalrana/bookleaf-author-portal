@@ -1,4 +1,4 @@
-/** Pill badge for ticket priority level. Renders a dash when priority is null. */
+import { Badge } from "./Badge";
 
 const PRIORITY_CLASS: Record<string, string> = {
   CRITICAL: "bg-red-100 text-red-800 ring-1 ring-red-300",
@@ -17,12 +17,8 @@ export function PriorityBadge({ priority }: Props) {
   }
 
   return (
-    <span
-      className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-        PRIORITY_CLASS[priority] ?? "bg-slate-100 text-slate-600"
-      }`}
-    >
+    <Badge className={PRIORITY_CLASS[priority] ?? "bg-slate-100 text-slate-600"}>
       {priority}
-    </span>
+    </Badge>
   );
 }
